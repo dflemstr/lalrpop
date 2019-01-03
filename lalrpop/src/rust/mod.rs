@@ -36,15 +36,17 @@ macro_rules! rust {
 pub struct RustWrite<W: Write> {
     write: W,
     indent: usize,
+    rust_2018_uses: bool,
 }
 
 const TAB: usize = 4;
 
 impl<'me, W: Write> RustWrite<W> {
-    pub fn new(w: W) -> RustWrite<W> {
+    pub fn new(w: W, rust_2018_uses: bool) -> RustWrite<W> {
         RustWrite {
             write: w,
             indent: 0,
+            rust_2018_uses: rust_2018_uses,
         }
     }
 
@@ -143,18 +145,33 @@ impl<'me, W: Write> RustWrite<W> {
     pub fn write_standard_uses(&mut self, prefix: &str) -> io::Result<()> {
         // Stuff that we plan to use.
         // Occasionally we happen to not use it after all, hence the allow.
-        rust!(self, "#[allow(unused_extern_crates)]");
-        rust!(
-            self,
-            "extern crate lalrpop_util as {p}lalrpop_util;",
-            p = prefix,
-        );
-        rust!(self, "#[allow(unused_imports)]");
-        rust!(
-            self,
-            "use self::{p}lalrpop_util::state_machine as {p}state_machine;",
-            p = prefix,
-        );
+        if self.rust_2018_uses {
+            rust!(self, "#[allow(unused_imports)]");
+            rust!(
+                self,
+                "use lalrpop_util as {p}lalrpop_util;",
+                p = prefix,
+            );
+            rust!(self, "#[allow(unused_imports)]");
+            rust!(
+                self,
+                "use lalrpop_util::state_machine as {p}state_machine;",
+                p = prefix,
+            );
+        } else {
+            rust!(self, "#[allow(unused_extern_crates)]");
+            rust!(
+                self,
+                "extern crate lalrpop_util as {p}lalrpop_util;",
+                p = prefix,
+            );
+            rust!(self, "#[allow(unused_imports)]");
+            rust!(
+                self,
+                "use self::{p}lalrpop_util::state_machine as {p}state_machine;",
+                p = prefix,
+            );
+        }
 
         Ok(())
     }

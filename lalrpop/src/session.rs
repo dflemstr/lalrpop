@@ -23,6 +23,16 @@ pub enum ColorConfig {
     IfTty,
 }
 
+/// The Rust edition to assume for generated code.
+#[derive(Copy, Clone)]
+pub enum RustEdition {
+    /// Generate code for the Rust 2015 edition.
+    Rust2015,
+
+    /// Generate code for the Rust 2018 edition.
+    Rust2018,
+}
+
 /// Various options to control debug output. Although this struct is
 /// technically part of LALRPOP's exported interface, it is not
 /// considered part of the semver guarantees as end-users are not
@@ -36,6 +46,8 @@ pub struct Session {
     pub in_dir: Option<path::PathBuf>,
 
     pub out_dir: Option<path::PathBuf>,
+
+    pub edition: RustEdition,
 
     /// Emit comments in generated code explaining the states and so
     /// forth.
@@ -94,6 +106,7 @@ impl Session {
             in_dir: None,
             out_dir: None,
             force_build: false,
+            edition: RustEdition::Rust2015,
             emit_comments: false,
             emit_whitespace: true,
             emit_report: false,
@@ -120,6 +133,7 @@ impl Session {
             in_dir: None,
             out_dir: None,
             force_build: false,
+            edition: RustEdition::Rust2015,
             emit_comments: false,
             emit_whitespace: true,
             emit_report: false,
@@ -155,6 +169,16 @@ impl Session {
 impl Default for Session {
     fn default() -> Self {
         Session::new()
+    }
+}
+
+impl RustEdition {
+    pub fn supports_rust_2018_uses(&self) -> bool {
+        match *self {
+            RustEdition::Rust2015 => false,
+            RustEdition::Rust2018 => true,
+            // add more Rust editions here until the use syntax changes again
+        }
     }
 }
 

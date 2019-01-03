@@ -55,4 +55,5 @@ mod test_util;
 pub use api::process_root;
 pub use api::process_root_unconditionally;
 pub use api::Configuration;
+pub use api::RustEdition;
 use ascii_canvas::style;

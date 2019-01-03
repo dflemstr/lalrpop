@@ -329,7 +329,7 @@ fn emit_recursive_ascent(
     grammar: &r::Grammar,
     report_file: &Path,
 ) -> io::Result<Vec<u8>> {
-    let mut rust = RustWrite::new(vec![]);
+    let mut rust = RustWrite::new(vec![], session.edition.supports_rust_2018_uses());
 
     // We generate a module structure like this:
     //

@@ -8,6 +8,8 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
+pub use session::RustEdition;
+
 /// Configure various aspects of how LALRPOP works.
 /// Intended for use within a `build.rs` script.
 /// To get the default configuration, use `Configuration::new`.
@@ -93,6 +95,13 @@ impl Configuration {
     /// `.rs` file is newer. Default is false.
     pub fn force_build(&mut self, val: bool) -> &mut Configuration {
         self.session.force_build = val;
+        self
+    }
+
+    /// If true, emit comments into the generated code. This makes the
+    /// generated code significantly larger. Default is false.
+    pub fn edition(&mut self, edition: RustEdition) -> &mut Configuration {
+        self.session.edition = edition;
         self
     }
 
